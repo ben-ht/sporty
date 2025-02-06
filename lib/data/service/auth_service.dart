@@ -1,17 +1,31 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sporty/utils/constants/size.dart';
 
+import '../models/user_model.dart';
+
 class AuthService {
 
   Future<void> register({
-    required String email,
+    required UserModel userModel,
     required String password
   }) async {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: email, password: password);
+      UserCredential credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: userModel.email,
+        password: password
+      );
+
+      User? user = credential.user;
+      if (user == null){
+        return;
+      }
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set(
+        userModel.toMap()
+      );
+
     } on FirebaseAuthException catch(e){
       String message = '';
       if (e.code == 'weak-password'){

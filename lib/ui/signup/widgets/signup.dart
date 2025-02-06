@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sporty/data/models/user_model.dart';
 import 'package:sporty/data/service/auth_service.dart';
 import 'package:sporty/ui/core/shared/social-button.dart';
 import 'package:sporty/ui/core/shared/text-divider.dart';
@@ -18,6 +19,10 @@ class _SignupScreen extends State<SignupScreen> {
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final usernameController = TextEditingController();
+  final nameController = TextEditingController();
+  final surnameController = TextEditingController();
+
 
   @override
   void dispose(){
@@ -45,6 +50,7 @@ class _SignupScreen extends State<SignupScreen> {
                       children: [
                         Expanded(
                           child: TextFormField(
+                            controller: nameController,
                             expands: false,
                             decoration: const InputDecoration(
                               labelText: 'Prénom',
@@ -57,6 +63,7 @@ class _SignupScreen extends State<SignupScreen> {
                         ),
                         Expanded(
                           child: TextFormField(
+                            controller: surnameController,
                             expands: false,
                             decoration: const InputDecoration(
                                 labelText: 'Nom',
@@ -70,6 +77,7 @@ class _SignupScreen extends State<SignupScreen> {
                       height: Sizes.spaceInputs,
                     ),
                     TextFormField(
+                      controller: usernameController,
                       expands: false,
                       decoration: const InputDecoration(
                         labelText: 'Nom d\'utilisateur',
@@ -140,7 +148,12 @@ class _SignupScreen extends State<SignupScreen> {
                       child: ElevatedButton(
                         onPressed: () async {
                           await AuthService().register(
-                              email: emailController.text,
+                              userModel: UserModel(
+                                  username: usernameController.text,
+                                  name: nameController.text,
+                                  surname: surnameController.text,
+                                  email: emailController.text
+                              ),
                               password: passwordController.text);
                         },
                         child: Text('S\'inscrire'),
