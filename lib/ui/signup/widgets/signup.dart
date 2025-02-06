@@ -1,11 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:sporty/data/service/auth_service.dart';
 import 'package:sporty/ui/core/shared/social-button.dart';
 import 'package:sporty/ui/core/shared/text-divider.dart';
 
 import '../../../utils/constants/size.dart';
 
-class SignupScreen extends StatelessWidget {
+class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _SignupScreen();
+  }
+}
+
+class _SignupScreen extends State<SignupScreen> {
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void dispose(){
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +80,7 @@ class SignupScreen extends StatelessWidget {
                       height: Sizes.spaceInputs,
                     ),
                     TextFormField(
+                      controller: emailController,
                       expands: false,
                       decoration: const InputDecoration(
                         labelText: 'Adresse email',
@@ -71,6 +91,8 @@ class SignupScreen extends StatelessWidget {
                       height: Sizes.spaceInputs,
                     ),
                     TextFormField(
+                      controller: passwordController,
+                      obscureText: true,
                       expands: false,
                       decoration: const InputDecoration(
                         labelText: 'Mot de passe',
@@ -116,8 +138,12 @@ class SignupScreen extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: (){},
-                        child: Text('S\'inscrire')
+                        onPressed: () async {
+                          await AuthService().register(
+                              email: emailController.text,
+                              password: passwordController.text);
+                        },
+                        child: Text('S\'inscrire'),
                       ),
                     )
                   ],
