@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:sporty/model/event/event.dart';
+import 'package:sporty/ui/search/event_card.dart';
 
 class Search extends StatefulWidget {
   const Search({super.key});
@@ -13,7 +14,7 @@ class Search extends StatefulWidget {
 
 class _SearchState extends State<Search> {
 
-  final TextEditingController _searchController = TextEditingController();
+  // final TextEditingController _searchController = TextEditingController();
   List<Event> _allEvents = [];
   List<Event> _filteredEvents = [];
 
@@ -66,7 +67,7 @@ class _SearchState extends State<Search> {
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: _searchController, // utile ?
+                      // controller: _searchController, // utile ?
                       onChanged: (value) => _handleSearch(value),
                       decoration: InputDecoration(
                         hintText: 'Rechercher...',
@@ -74,13 +75,7 @@ class _SearchState extends State<Search> {
                         contentPadding: EdgeInsets.symmetric(horizontal: 16),
                       ),
                     ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Logique de recherche
-                    },
-                    child: Text('Rechercher'),
-                  ),
+                  )
                 ],
               ),
             ),
@@ -89,11 +84,12 @@ class _SearchState extends State<Search> {
 
           Expanded(
             child: DraggableScrollableSheet(
-              initialChildSize: 0.3,
-              minChildSize: 0.1,
-              maxChildSize: 0.9,
+              initialChildSize: 1.0,
+              minChildSize: 1.0,
+              maxChildSize: 1.0,
               builder: (context, scrollController) {
                 return Container(
+                  padding: EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
                     color: Colors.green[300],
                     borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -102,11 +98,12 @@ class _SearchState extends State<Search> {
                     controller: scrollController,
                     itemCount: _filteredEvents.length,
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(_filteredEvents[index].title ?? 'toto'),
-                        // subtitle: Text(_filteredEvents[index].sports!.map((s) => s.name).join(', ')),
-                        // subtitle: Text(_filteredEvents[index].sports!.join(', ')),
-                      );
+                      // return ListTile(
+                      //   title: Text(_filteredEvents[index].title ?? 'toto'),
+                      //   // subtitle: Text(_filteredEvents[index].sports!.map((s) => s.name).join(', ')),
+                      //   subtitle: Text(_filteredEvents[index].sports!.join(', ')),
+                      // );
+                      return EventCard(_filteredEvents[index]); 
                     },
                   ),
                 );
