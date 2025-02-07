@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sporty/ui/signup/widgets/Signup.dart';
+import 'package:sporty/ui/search/search.dart';
+import 'package:sporty/ui/signup/widgets/signup.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,6 +42,7 @@ class MainScreen extends StatelessWidget {
     const HomeScreen(),
     const FavoritesScreen(),
     const SettingsScreen(),
+    const Search()
   ];
 
   @override
@@ -54,10 +56,14 @@ class MainScreen extends StatelessWidget {
         onTap: (index) {
           appState.setSelectedIndex(index);
         },
+        type: BottomNavigationBarType.fixed, // Ajoutez cette ligne
+        selectedItemColor: Theme.of(context).colorScheme.primary, // Optionnel: pour une meilleure cohérence visuelle
+        unselectedItemColor: Colors.grey, // Optionnel: pour une meilleure cohérence visuelle
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Favorites"),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
         ],
       ),
     );
