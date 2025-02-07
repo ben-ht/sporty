@@ -1,0 +1,53 @@
+[
+    {
+      "id": 1,
+      "title": "Marathon de Paris",
+      "description": "Course annuelle à travers les rues de Paris",
+      "date": "2024-04-07",
+      "location": "Paris, France",
+      "sports": ["Course à pied"],
+      "maxParticipants": 50000,
+      "currentParticipants": 45000
+    },
+    {
+      "id": 2,
+      "title": "Tournoi de Tennis Amateur",
+      "description": "Compétition locale pour joueurs amateurs",
+      "date": "2024-06-15",
+      "location": "Club de Tennis Municipal, Lyon",
+      "sports": ["Tennis"],
+      "maxParticipants": 64,
+      "currentParticipants": 32
+    },
+    {
+      "id": 3,
+      "title": "Séance de Yoga en Plein Air",
+      "description": "Session de yoga gratuite dans le parc central",
+      "date": "2024-07-01",
+      "location": "Parc de la Tête d'Or, Lyon",
+      "sports": ["Yoga"],
+      "maxParticipants": 100,
+      "currentParticipants": 75
+    },
+    {
+      "id": 4,
+      "title": "Randonnée en Montagne",
+      "description": "Excursion guidée dans les Alpes françaises",
+      "date": "2024-08-20",
+      "location": "Chamonix-Mont-Blanc",
+      "sports": ["Randonnée"],
+      "maxParticipants": 20,
+      "currentParticipants": 15
+    },
+    {
+      "id": 5,
+      "title": "Tournoi de Football Inter-entreprises",
+      "description": "Compétition amicale entre entreprises locales",
+      "date": "2024-09-10",
+      "location": "Stade Municipal, Marseille",
+      "sports": ["Football"],
+      "maxParticipants": 160,
+      "currentParticipants": 120
+    }
+  ]
+  
