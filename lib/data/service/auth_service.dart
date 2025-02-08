@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sporty/utils/constants/size.dart';
 
-import '../models/user_model.dart';
+import '../../model/user/user.dart';
 
 class AuthService {
 
@@ -12,6 +12,8 @@ class AuthService {
     required UserModel userModel,
     required String password
   }) async {
+    return;
+
     try {
       UserCredential credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: userModel.email,

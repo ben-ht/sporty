@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sporty/ui/search/search.dart';
 import 'package:sporty/ui/signup/widgets/Signup.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sporty/ui/signup/widgets/sports_selection.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -25,7 +27,13 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlueAccent),
         ),
-        home: MainScreen(),
+        home: SignupScreen(),
+        routes: {
+          '/home': (context) => MainScreen(),
+          '/signup': (context) => SignupScreen(),
+          '/sportsPreferences': (context) => SportsSelection(),
+          '/search': (context) => Search(),
+        },
       ),
     );
   }
@@ -42,11 +50,10 @@ class MyAppState extends ChangeNotifier {
   }
 }
 
+
 class MainScreen extends StatelessWidget {
   final List<Widget> pages = [
     const HomeScreen(),
-    const FavoritesScreen(),
-    const SettingsScreen(),
     const Search()
   ];
 
@@ -56,9 +63,11 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = Provider.of<MyAppState>(context);
 
+    bool showBottomNavigationBar = pages[appState.selectedIndex] is! SignupScreen;
+
     return Scaffold(
       body: pages[appState.selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar:  showBottomNavigationBar ? BottomNavigationBar(
         currentIndex: appState.selectedIndex,
         onTap: (index) {
           appState.setSelectedIndex(index);
@@ -68,11 +77,9 @@ class MainScreen extends StatelessWidget {
         unselectedItemColor: Colors.grey, // Optionnel: pour une meilleure cohérence visuelle
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Favorites"),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
         ],
-      ),
+      ) : null,
     );
   }
 }
@@ -82,24 +89,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Home Screen'));
-  }
-}
-
-class FavoritesScreen extends StatelessWidget {
-  const FavoritesScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SignupScreen();
-  }
-}
-
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Settings Screen'));
+    return Placeholder();
   }
 }

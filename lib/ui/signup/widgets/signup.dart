@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sporty/data/models/user_model.dart';
+import 'package:sporty/model/user/user.dart';
 import 'package:sporty/data/service/auth_service.dart';
 import 'package:sporty/ui/core/shared/social-button.dart';
 import 'package:sporty/ui/core/shared/text-divider.dart';
+import 'package:sporty/ui/signup/widgets/sports_selection.dart';
 
 import '../../../utils/constants/size.dart';
 
@@ -155,6 +156,9 @@ class _SignupScreen extends State<SignupScreen> {
                                   email: emailController.text
                               ),
                               password: passwordController.text);
+
+                          Navigator.pushNamedAndRemoveUntil(context,
+                              '/sportsPreferences', (route) => false);
                         },
                         child: Text('S\'inscrire'),
                       ),
