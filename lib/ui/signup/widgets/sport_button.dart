@@ -2,9 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SportButton extends StatefulWidget {
-  const SportButton({super.key, required this.sportName});
+  const SportButton({
+    super.key,
+    required this.sportName,
+    required this.onSelectionChanged,
+  });
 
   final String sportName;
+  final Function(String, bool) onSelectionChanged;
 
   @override
   State<StatefulWidget> createState() {
@@ -23,6 +28,7 @@ class _SportButtonState extends State<SportButton> {
           setState(() {
             isSelected = !isSelected;
           });
+          widget.onSelectionChanged(widget.sportName, isSelected);
         },
         style: ElevatedButton.styleFrom(
             backgroundColor: isSelected ? Colors.blueAccent : Colors.white,

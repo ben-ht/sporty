@@ -1,8 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sporty/utils/constants/size.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../model/user/user.dart';
 
@@ -10,33 +9,15 @@ class AuthService {
 
   Future<void> register({
     required UserModel userModel,
-    required String password
+    required String password,
   }) async {
-    return;
+    final response = await Supabase.instance.client.auth.signUp(
+      email: userModel.email,
+      password: password,
+    );
 
-    try {
-      UserCredential credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: userModel.email,
-        password: password
-      );
-
-      User? user = credential.user;
-      if (user == null){
-        return;
-      }
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set(
-        userModel.toMap()
-      );
-
-    } on FirebaseAuthException catch(e){
-      String message = '';
-      if (e.code == 'weak-password'){
-        message = 'Le mot de passe est trop faible';
-      } else if (e.code == 'email-already-in-use'){
-        message = 'Un compte existe déjà avec cet email';
-      }
-
-      Fluttertoast.showToast(msg: message,
+    if (response.user == null) {
+      Fluttertoast.showToast(msg: "Registration failed. Please try again.",
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.SNACKBAR,
         backgroundColor: Colors.black26,
@@ -44,5 +25,15 @@ class AuthService {
         fontSize: Sizes.fontSizeLg
       );
     }
+  }
+
+  Future<void> login({
+    required String email,
+    required String password
+  }) async {
+    await Supabase.instance.client.auth.signInWithPassword(
+        email: email,
+        password: password,
+    );
   }
 }

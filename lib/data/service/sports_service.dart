@@ -1,15 +1,15 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../model/sport/sport.dart';
 
 class SportsService {
-  var sports = <Sport>[
-    Sport(name: 'Football'),
-    Sport(name: 'Basketball'),
-    Sport(name: 'Tennis'),
-    Sport(name: 'Volleyball'),
-    Sport(name: 'Handball'),
-  ];
+  Future<List<Sport>> getSports() async {
+    final response = await Supabase.instance.client
+        .from('sports')
+        .select();
 
-  Future<Iterable<Sport>> getSports() async {
-    return sports;
+    return (response as List<dynamic>).map((item) {
+      return Sport(name: item['name'], id: item['id']);
+    }).toList();
   }
 }

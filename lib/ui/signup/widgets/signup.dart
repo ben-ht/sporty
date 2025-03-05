@@ -157,6 +157,10 @@ class _SignupScreen extends State<SignupScreen> {
                               ),
                               password: passwordController.text);
 
+                          await AuthService().login(
+                              email: emailController.text,
+                              password: passwordController.text);
+
                           Navigator.pushNamedAndRemoveUntil(context,
                               '/sportsPreferences', (route) => false);
                         },

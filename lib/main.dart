@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sporty/ui/search/search.dart';
 import 'package:sporty/ui/signup/widgets/Signup.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:sporty/ui/signup/widgets/sports_selection.dart';
-import 'firebase_options.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Supabase.initialize(
+      url: "https://fosyvfvlcmvvzeizrgss.supabase.co",
+      anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvc3l2ZnZsY212dnplaXpyZ3NzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkzMDE5MjcsImV4cCI6MjA1NDg3NzkyN30.eN4vLxA7TJNWLSTjVkPuWo5y_507oJJpBrsA-PQLZ5E");
   runApp(const MyApp());
 }
 

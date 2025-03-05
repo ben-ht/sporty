@@ -1,6 +1,6 @@
 class Sport {
-  final String? uid;
+  final int? id;
   final String name;
 
-  Sport({this.uid, required this.name});
+  Sport({this.id, required this.name});
 }
