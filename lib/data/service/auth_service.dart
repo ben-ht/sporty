@@ -16,15 +16,25 @@ class AuthService {
       password: password,
     );
 
-    if (response.user == null) {
+    // TODO util.showToast
+    if (response.user == null){
       Fluttertoast.showToast(msg: "Registration failed. Please try again.",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.SNACKBAR,
-        backgroundColor: Colors.black26,
-        textColor: Colors.white70,
-        fontSize: Sizes.fontSizeLg
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.SNACKBAR,
+          backgroundColor: Colors.black26,
+          textColor: Colors.white70,
+          fontSize: Sizes.fontSizeLg
       );
+      return;
     }
+    final userId = response.user!.id;
+
+    await Supabase.instance.client.from('profiles').insert({
+      'userId': userId,
+      'name': userModel.name,
+      'surname': userModel.surname,
+      'username': userModel.username,
+    });
   }
 
   Future<void> login({
