@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sporty/ui/create/create.dart';
 import 'package:sporty/ui/search/search.dart';
 import 'package:sporty/ui/signup/widgets/Signup.dart';
 import 'package:sporty/ui/signup/widgets/sports_selection.dart';
@@ -53,6 +54,7 @@ class MyAppState extends ChangeNotifier {
 class MainScreen extends StatelessWidget {
   final List<Widget> pages = [
     const HomeScreen(),
+    const CreateApp(),
     const Search()
   ];
 
@@ -76,6 +78,7 @@ class MainScreen extends StatelessWidget {
         unselectedItemColor: Colors.grey, // Optionnel: pour une meilleure cohérence visuelle
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.create), label: "Create"),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
         ],
       ) : null,
