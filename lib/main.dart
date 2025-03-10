@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sporty/ui/create/create.dart';
 import 'package:sporty/ui/search/search.dart';
-import 'package:sporty/ui/signup/widgets/Signup.dart';
+import 'package:sporty/ui/signup/widgets/signup.dart';
 import 'package:sporty/ui/signup/widgets/sports_selection.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
