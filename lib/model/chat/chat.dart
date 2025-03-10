@@ -1,8 +1,8 @@
 import 'dart:ffi';
 
 class ChatModel {
-  final Int8 id;
-  final Int8 event_id;
+  final int id;
+  final int event_id;
 
   ChatModel({
     required this.id,
