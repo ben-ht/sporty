@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sporty/ui/create/create.dart';
+import 'package:sporty/ui/creation/creation.dart';
 import 'package:sporty/ui/search/search.dart';
 import 'package:sporty/ui/signup/widgets/signup.dart';
 import 'package:sporty/ui/signup/widgets/sports_selection.dart';
@@ -54,7 +54,7 @@ class MyAppState extends ChangeNotifier {
 class MainScreen extends StatelessWidget {
   final List<Widget> pages = [
     const HomeScreen(),
-    const CreateApp(),
+    const Creation(),
     const Search()
   ];
 
