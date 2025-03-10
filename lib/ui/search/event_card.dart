@@ -4,7 +4,7 @@ import 'package:sporty/model/event/event.dart';
 class EventCard extends StatelessWidget {
   final Event event ;
 
-  EventCard(this.event) ;
+  const EventCard(this.event, {super.key}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +28,21 @@ class EventCard extends StatelessWidget {
                   Text('Sports: ${event.sports?.join(', ') ?? 'Aucun sport spécifié'}'),
                   SizedBox(height: 8),
                   Text('Participants: ${event.maxParticipants ?? 'Non spécifié'}'),
+                  SizedBox(height: 16),
+                  Center(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        side: BorderSide(color: const Color.fromARGB(255, 0, 113, 83), width: 2),
+                        // padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                      ),
+                      onPressed: () {
+                        print("Rejoindre l'événement: ${event.title}");
+                      },
+                      child: Text("Rejoindre"),
+                    ),
+                  ),
+
+
                 ],
               ),
             ),

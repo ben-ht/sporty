@@ -9,7 +9,7 @@ class Search extends StatefulWidget {
   const Search({super.key});
 
   @override
-  _SearchState createState() => _SearchState();
+  State<Search> createState() => _SearchState();
 }
 
 class _SearchState extends State<Search> {
@@ -69,6 +69,7 @@ class _SearchState extends State<Search> {
                     child: TextField(
                       // controller: _searchController, // utile ?
                       onChanged: (value) => _handleSearch(value),
+                      cursorColor: const Color.fromARGB(255, 0, 113, 83),
                       decoration: InputDecoration(
                         hintText: 'Rechercher...',
                         border: InputBorder.none,
