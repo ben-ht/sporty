@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sporty/model/chat/chat.dart';
+import 'package:sporty/ui/chat/chatDetail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ChatApp extends StatelessWidget {
@@ -67,15 +68,25 @@ class ChatApp extends StatelessWidget {
                 final eventTitle = chat['events']['title'] ?? 'Événement inconnu';
 
                 return ListTile(
-                  title: Text('Événement: $eventTitle'),
+                  title: Text(eventTitle),
                   subtitle: Text('Chat ID: ${chat['id']}'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatDetailPage(
+                          chatId: chat['id'],
+                          eventTitle: eventTitle,
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
             );
           }
         },
       ),
-
     );
   }
 }
