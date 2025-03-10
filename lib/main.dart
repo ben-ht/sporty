@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sporty/ui/chat/chat.dart';
 import 'package:sporty/ui/create/create.dart';
 import 'package:sporty/ui/search/search.dart';
 import 'package:sporty/ui/signup/widgets/signup.dart';
@@ -55,7 +56,8 @@ class MainScreen extends StatelessWidget {
   final List<Widget> pages = [
     const HomeScreen(),
     const CreateApp(),
-    const Search()
+    const Search(),
+    const ChatApp(),
   ];
 
   MainScreen({super.key});
@@ -80,6 +82,7 @@ class MainScreen extends StatelessWidget {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.create), label: "Create"),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Chat"),
         ],
       ) : null,
     );
