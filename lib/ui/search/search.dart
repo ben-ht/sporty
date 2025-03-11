@@ -52,7 +52,7 @@ class _SearchState extends State<Search> {
           id, title, description, creatorId, date, longitude, latitude, maxParticipants, createdAt, place,
           sports (id, name)
         ''')
-          .lt('date', now); // Filtrer les événements passés
+          .gt('date', now); // Filtrer les événements passés
 
       print('Joined event IDs: $joinedEventIds');
 
