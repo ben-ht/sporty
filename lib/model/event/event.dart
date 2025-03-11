@@ -4,12 +4,12 @@ class Event {
   final int id;
   final String title;
   final String description;
-  final int creatorId;
+  final String creatorId;
   final DateTime date;
   final double longitude;
   final double latitude;
   final Sport sport;
-  final int maxParticipants;
+  final int? maxParticipants;
   final DateTime createdAt;
 
   Event({
@@ -21,7 +21,7 @@ class Event {
     required this.longitude,
     required this.latitude,
     required this.sport,
-    required this.maxParticipants,
+    this.maxParticipants,
     required this.createdAt,
   });
 

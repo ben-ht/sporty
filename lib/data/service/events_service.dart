@@ -6,12 +6,13 @@ class EventsService {
   final SupabaseClient _client = Supabase.instance.client;
 
   Future<List<Event>> getEvents() async {
-    final client = Supabase.instance.client;
-
     try {
-      final data = await client
+      final data = await _client
           .from('events')
-          .select('*');
+          .select('''
+            *,
+            sport:sports(*)
+          ''');
 
       return (data as List)
           .map((e) => Event.fromJson(e as Map<String, dynamic>))
