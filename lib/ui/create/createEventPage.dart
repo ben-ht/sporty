@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sporty/ui/chat/chat.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../chat/chatDetail.dart';
 
@@ -85,6 +86,11 @@ class _CreateEventPageState extends State<CreateEventPage> {
 
       final eventId = eventResponse['id'];
 
+      await supabase.from('participants').insert({
+        'eventId': eventId,
+        'userId': user.id,
+      });
+
       final chatResponse = await supabase.from('chat').insert({
         'event_id': eventId,
       }).select('id').single();
@@ -95,10 +101,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
         SnackBar(content: Text("Événement et chat créés avec succès !")),
       );
 
-      Navigator.pushReplacement(
+      Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ChatDetailPage(chatId: chatId, eventTitle: _titleController.text),
+          builder: (context) => ChatApp(),
         ),
       );
     } catch (error) {
