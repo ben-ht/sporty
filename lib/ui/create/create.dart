@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'createEventPage.dart'; // Import de la page de création d'événement
 
 class CreateApp extends StatelessWidget {
   const CreateApp({super.key});
@@ -6,15 +7,7 @@ class CreateApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Create Event Page'),
-      ),
-      body: Center(
-        child: Text('This is the Create Event Page'),
-      )
-
-
-      // theme: ThemeData(useMaterial3: true),
+      body: CreateEventPage(), // Appel de la page de création directement
     );
   }
 }
