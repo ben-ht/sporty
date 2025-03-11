@@ -12,6 +12,7 @@ class Event {
   final int? maxParticipants;
   final DateTime createdAt;
   final String place;
+  final String city;
 
   Event({
     required this.id,
@@ -25,6 +26,7 @@ class Event {
     required this.maxParticipants,
     required this.createdAt,
     required this.place,
+    required this.city
   });
 
   Map<String, dynamic> toMap() {
@@ -40,6 +42,7 @@ class Event {
       'maxParticipants': maxParticipants,
       'createdAt': createdAt.toIso8601String(),
       'place': place,
+      'city': city
     };
   }
 
@@ -58,6 +61,7 @@ class Event {
       maxParticipants: map['maxParticipants'],
       createdAt: DateTime.parse(map['createdAt']),
       place: map['place'],
+      city: map['city'],
     );
   }
 

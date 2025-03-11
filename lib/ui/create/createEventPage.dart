@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
@@ -32,7 +33,6 @@ class _CreateEventPageState extends State<CreateEventPage> {
   GoogleMapController? _mapController;
   Set<Marker> _markers = {};
   final LatLng _defaultLocation = LatLng(48.8566, 2.3522); // Default to Paris
-  bool _isSearching = false;
 
   @override
   void initState() {
@@ -119,6 +119,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
         'sportId': _sportId,
         'longitude': _longitude,
         'latitude': _latitude,
+        'city': await getCityFromCoordinates(_latitude!, _longitude!),
       }).select('id').single();
 
       final eventId = eventResponse['id'];
@@ -169,6 +170,21 @@ class _CreateEventPageState extends State<CreateEventPage> {
     setState(() {
       _placeController.text = "Emplacement sélectionné sur la carte";
     });
+  }
+
+  Future<String?> getCityFromCoordinates(double latitude, double longitude) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
+        return place.locality;
+      }
+
+      return null;
+    } catch (error) {
+        print('Erreur lors du géocodage inverse: $error');
+        return null;
+    }
   }
 
   Widget _buildPlacesAutoComplete() {

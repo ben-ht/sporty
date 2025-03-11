@@ -23,7 +23,7 @@ class EventCard extends StatelessWidget {
                 SizedBox(height: 8),
                 Text('Description: ${event.description}'),
                 SizedBox(height: 8),
-                Text('Lieu:'),
+                Text('Lieu: ${event.city}'),
                 SizedBox(height: 8),
                 Text('Sports: ${event.sport?.name}'),
                 SizedBox(height: 8),
