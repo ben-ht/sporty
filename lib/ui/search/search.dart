@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sporty/model/event/event.dart';
-import 'package:sporty/ui/search/event_card.dart';
+import 'package:sporty/ui/core/shared/event_card.dart';
 
 class Search extends StatefulWidget {
   const Search({super.key});
@@ -25,7 +25,7 @@ class _SearchState extends State<Search> {
   Future<void> _fetchEvents() async {
     final response = await _client.from('events').select('''
       id, title, description, creatorId, date, longitude, latitude, maxParticipants, createdAt,
-      sport (id, name)
+      sports (id, name)
     ''');
 
     List<Event> events = response.map<Event>((json) => Event.fromJson(json)).toList();

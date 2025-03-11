@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:sporty/data/service/events_service.dart';
 import 'package:sporty/model/event/event.dart';
 
+import '../core/shared/event_card.dart';
+
 class EventFeed extends StatefulWidget {
   const EventFeed({super.key});
 
@@ -69,16 +71,6 @@ class _EventFeedPageState extends State<EventFeed> {
     }
   }
 
-  double _calculateDistance(Event event) {
-    double distance = Geolocator.distanceBetween(
-      _currentPosition.latitude,
-      _currentPosition.longitude,
-      event.latitude,
-      event.longitude,
-    );
-    return distance;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,10 +80,15 @@ class _EventFeedPageState extends State<EventFeed> {
         itemCount: _events.length,
         itemBuilder: (context, index) {
           Event event = _events[index];
-          double distance = _calculateDistance(event);
-          return ListTile(
-            title: Text(event.title),
-            subtitle: Text('${distance.toStringAsFixed(2)} meters away'),
+          return EventCard(
+            event,
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                '/event_details',
+                arguments: event,
+              );
+            },
           );
         },
       ),
