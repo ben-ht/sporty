@@ -12,9 +12,9 @@ class Search extends StatefulWidget {
 
 class _SearchState extends State<Search> {
   final SupabaseClient _client = Supabase.instance.client;
-
   List<Event> _allEvents = [];
   List<Event> _filteredEvents = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -22,25 +22,76 @@ class _SearchState extends State<Search> {
     _fetchEvents();
   }
 
+  /// Récupération des événements disponibles (où l'utilisateur N'EST PAS participant)
   Future<void> _fetchEvents() async {
-    final response = await _client.from('events').select('''
-      id, title, description, creatorId, date, longitude, latitude, maxParticipants, createdAt,
-      sport (id, name)
-    ''');
+    final user = _client.auth.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Vous devez être connecté pour voir les événements.")),
+      );
+      return;
+    }
 
-    List<Event> events = response.map<Event>((json) => Event.fromJson(json)).toList();
+    final now = DateTime.now().toIso8601String();
 
-    setState(() {
-      _allEvents = events;
-      _filteredEvents = events;
-    });
+    try {
+      // Étape 1 : Récupérer les événements où l'utilisateur est déjà participant
+      final participantResponse = await _client
+          .from('participants')
+          .select('eventId')
+          .eq('userId', user.id);
+
+      print('Participant response: $participantResponse');
+
+      final List<int> joinedEventIds = participantResponse.map<int>((p) => p['eventId'] as int).toList();
+
+      // Étape 2 : Récupérer les événements disponibles en excluant ceux déjà rejoints
+      var query = _client
+          .from('events')
+          .select('''
+          id, title, description, creatorId, date, longitude, latitude, maxParticipants, createdAt, place,
+          sports (id, name)
+        ''')
+          .lt('date', now); // Filtrer les événements passés
+
+      print('Joined event IDs: $joinedEventIds');
+
+      // Exclure les événements déjà rejoints
+      if (joinedEventIds.isNotEmpty) {
+        query = query.not('id', 'in', joinedEventIds);
+      }
+
+      final response = await query;
+
+      print('Events response: $response');
+
+      List<Event> events = response.map<Event>((map) => Event.fromMap(map)).toList();
+
+      print('Events: $events');
+
+      setState(() {
+        _allEvents = events;
+        _filteredEvents = events;
+        _isLoading = false;
+      });
+    } catch (error) {
+      print(error);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur lors du chargement des événements : $error")),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
+  /// Recherche parmi les événements
   void _handleSearch(String query) {
     setState(() {
       _filteredEvents = _allEvents.where((event) =>
-      event.title.toLowerCase().contains(query.toLowerCase()) ||
-          event.sport.name.toLowerCase().contains(query.toLowerCase())
+      event.title.toLowerCase().contains(query.toLowerCase())
+          // ||
+          // event.sport?.name.toLowerCase().contains(query.toLowerCase())
       ).toList();
     });
   }
@@ -75,7 +126,11 @@ class _SearchState extends State<Search> {
             ),
           ),
           Expanded(
-            child: DraggableScrollableSheet(
+            child: _isLoading
+                ? Center(child: CircularProgressIndicator())
+                : _filteredEvents.isEmpty
+                ? Center(child: Text("Aucun événement disponible"))
+                : DraggableScrollableSheet(
               initialChildSize: 1.0,
               minChildSize: 1.0,
               maxChildSize: 1.0,
@@ -90,7 +145,10 @@ class _SearchState extends State<Search> {
                     controller: scrollController,
                     itemCount: _filteredEvents.length,
                     itemBuilder: (context, index) {
-                      return EventCard(_filteredEvents[index]);
+                      return EventCard(
+                        event: _filteredEvents[index],
+                        onJoin: _fetchEvents, // Rafraîchir après inscription
+                      );
                     },
                   ),
                 );

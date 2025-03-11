@@ -4,10 +4,24 @@ class Sport {
 
   Sport({this.id, required this.name});
 
-  factory Sport.fromJson(Map<String, dynamic> json) {
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+    };
+  }
+
+  factory Sport.fromMap(Map<String, dynamic> map) {
     return Sport(
-      id: json['id'],
-      name: json['name'],
+      id: map['id'],
+      name: map['name'],
     );
   }
+
+  // factory Sport.fromJson(Map<String, dynamic> json) {
+  //   return Sport(
+  //     id: json['id'],
+  //     name: json['name'],
+  //   );
+  // }
 }

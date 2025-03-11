@@ -19,7 +19,7 @@ Future<void> main() async {
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => MyAppState()),
-          Provider(create: (context) => EventsService()),
+          // Provider(create: (context) => EventsService()),
         ],
         child: MyApp(),
       )

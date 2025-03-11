@@ -21,7 +21,7 @@ class _EventFeedPageState extends State<EventFeed> {
   void initState() {
     super.initState();
     _getCurrentLocation();
-    _fetchEvents();
+    // _fetchEvents();
   }
 
   Future<void> _getCurrentLocation() async {
@@ -57,17 +57,17 @@ class _EventFeedPageState extends State<EventFeed> {
     });
   }
 
-  Future<void> _fetchEvents() async {
-    try {
-      final eventService = Provider.of<EventsService>(context, listen: false);
-      final events = await eventService.getEvents();
-      setState(() {
-        _events = events;
-      });
-    } catch (error) {
-      print('Error fetching events: $error');
-    }
-  }
+  // Future<void> _fetchEvents() async {
+  //   try {
+  //     // final eventService = Provider.of<EventsService>(context, listen: false);
+  //     final events = await eventService.getEvents();
+  //     setState(() {
+  //       _events = events;
+  //     });
+  //   } catch (error) {
+  //     print('Error fetching events: $error');
+  //   }
+  // }
 
   double _calculateDistance(Event event) {
     double distance = Geolocator.distanceBetween(

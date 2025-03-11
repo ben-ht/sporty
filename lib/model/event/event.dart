@@ -8,9 +8,10 @@ class Event {
   final DateTime date;
   final double longitude;
   final double latitude;
-  final Sport sport;
+  final Sport? sport;
   final int? maxParticipants;
   final DateTime createdAt;
+  final String place;
 
   Event({
     required this.id,
@@ -21,22 +22,42 @@ class Event {
     required this.longitude,
     required this.latitude,
     required this.sport,
-    this.maxParticipants,
+    required this.maxParticipants,
     required this.createdAt,
+    required this.place,
   });
 
-  factory Event.fromJson(Map<String, dynamic> json) {
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'creatorId': creatorId,
+      'date': date.toIso8601String(),
+      'longitude': longitude,
+      'latitude': latitude,
+      'sport': sport?.toMap(),
+      'maxParticipants': maxParticipants,
+      'createdAt': createdAt.toIso8601String(),
+      'place': place,
+    };
+  }
+
+  factory Event.fromMap(Map<String, dynamic> map) {
     return Event(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      creatorId: json['creatorId'],
-      date: DateTime.parse(json['date']),
-      longitude: json['longitude'],
-      latitude: json['latitude'],
-      sport: Sport.fromJson(json['sport']),
-      maxParticipants: json['maxParticipants'],
-      createdAt: DateTime.parse(json['createdAt']),
+      id: map['id'],
+      title: map['title'],
+      description: map['description'],
+      creatorId: map['creatorId'],
+      date: DateTime.parse(map['date']),
+      longitude: map['longitude'],
+      latitude: map['latitude'],
+      sport: map['sports'] != null && map['sports'] is Map<String, dynamic>
+          ? Sport.fromMap(map['sports'])
+          : null,
+      maxParticipants: map['maxParticipants'],
+      createdAt: DateTime.parse(map['createdAt']),
+      place: map['place'],
     );
   }
 }
