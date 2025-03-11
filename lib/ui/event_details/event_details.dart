@@ -92,7 +92,7 @@ class _EventDetailPageState extends State<EventDetail> {
                       Icon(Icons.sports, color: Theme.of(context).primaryColor),
                       const SizedBox(width: 8),
                       Text(
-                        'Sport: ${widget.event.sport.name}',
+                        'Sport: ${widget.event.sport?.name}',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ],
