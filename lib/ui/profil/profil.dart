@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class Profil extends StatelessWidget {
+  const Profil({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Accueil"),
+        title: const Text("Profil"),
         backgroundColor: Colors.green,
-        leading: const Icon(Icons.home),
+        leading: const Icon(Icons.people_rounded),
         actions: [
           IconButton(
             icon: Icon(Icons.settings),
