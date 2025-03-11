@@ -50,8 +50,8 @@ class Event {
       description: map['description'],
       creatorId: map['creatorId'],
       date: DateTime.parse(map['date']),
-      longitude: map['longitude'],
-      latitude: map['latitude'],
+      longitude: double.parse(map['longitude'].toString()),
+      latitude: double.parse(map['latitude'].toString()),
       sport: map['sports'] != null && map['sports'] is Map<String, dynamic>
           ? Sport.fromMap(map['sports'])
           : null,

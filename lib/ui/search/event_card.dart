@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sporty/data/service/events_service.dart';
 import 'package:sporty/model/event/event.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -6,7 +8,7 @@ class EventCard extends StatelessWidget {
   final Event event;
   final VoidCallback onJoin;
 
-  EventCard({required this.event, required this.onJoin});
+  const EventCard({super.key, required this.event, required this.onJoin});
 
   /// Fonction pour rejoindre un événement
   Future<void> _joinEvent(BuildContext context) async {
@@ -17,14 +19,11 @@ class EventCard extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Vous devez être connecté pour rejoindre un événement.")),
       );
-      return;
+      return; // TODO : Redirect to login
     }
 
     try {
-      await supabase.from('participants').insert({
-        'userId': user.id,
-        'eventId': event.id,
-      });
+      await Provider.of<EventsService>(context, listen: false).joinEvent(user, event);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Vous avez rejoint l'événement !")),

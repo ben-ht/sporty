@@ -101,7 +101,7 @@ class _SearchState extends State<Search> {
     return Scaffold(
       body: Column(
         children: [
-          Image.asset('public/img/sportyLogo.png', height: 200),
+          SizedBox(height: 64),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Container(
@@ -138,7 +138,7 @@ class _SearchState extends State<Search> {
                 return Container(
                   padding: EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
-                    color: Colors.green[300],
+                    color: Theme.of(context).primaryColorLight,
                     borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                   ),
                   child: ListView.builder(

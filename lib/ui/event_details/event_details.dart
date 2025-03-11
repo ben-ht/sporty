@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:sporty/data/service/events_service.dart';
 import 'package:sporty/model/event/event.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EventDetail extends StatefulWidget {
   final Event event;
@@ -143,17 +146,18 @@ class _EventDetailPageState extends State<EventDetail> {
       ),
       bottomNavigationBar: BottomAppBar(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: ElevatedButton(
-            onPressed: () {
-              // TODO: Implement join event functionality
+            onPressed: () async {
+              await Provider.of<EventsService>(context, listen: false).joinEvent(Supabase.instance.client.auth.currentUser!, widget.event);
+
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Joining event: ${widget.event.title}')),
+                SnackBar(content: Text('Vous avez rejoint: ${widget.event.title}')),
               );
             },
             child: const Padding(
               padding: EdgeInsets.all(12.0),
-              child: Text('Join Event'),
+              child: Text('Rejoindre'),
             ),
           ),
         ),

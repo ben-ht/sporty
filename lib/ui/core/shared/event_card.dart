@@ -19,6 +19,8 @@ class EventCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text(event.title, style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(height: 8),
                 Text('Description: ${event.description}'),
                 SizedBox(height: 8),
                 Text('Lieu:'),

@@ -1,27 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:google_places_flutter/model/prediction.dart';
 import 'package:sporty/ui/chat/chat.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../chat/chatDetail.dart';
 
 class CreateEventPage extends StatefulWidget {
+  const CreateEventPage({super.key});
+
   @override
-  _CreateEventPageState createState() => _CreateEventPageState();
+  createState() => _CreateEventPageState();
 }
 
 class _CreateEventPageState extends State<CreateEventPage> {
   final _formKey = GlobalKey<FormState>();
   final supabase = Supabase.instance.client;
+  final FocusNode _focusNode = FocusNode();
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _placeController = TextEditingController();
   final TextEditingController _maxParticipantsController = TextEditingController();
-  final TextEditingController _latitudeController = TextEditingController();
-  final TextEditingController _longitudeController = TextEditingController();
+
+  double? _latitude;
+  double? _longitude;
 
   DateTime? _selectedDate;
   int? _sportId;
   List<Map<String, dynamic>> _sports = [];
+
+  GoogleMapController? _mapController;
+  Set<Marker> _markers = {};
+  final LatLng _defaultLocation = LatLng(48.8566, 2.3522); // Default to Paris
+  bool _isSearching = false;
 
   @override
   void initState() {
@@ -34,6 +45,34 @@ class _CreateEventPageState extends State<CreateEventPage> {
     setState(() {
       _sports = List<Map<String, dynamic>>.from(response);
     });
+  }
+
+  Future<void> _selectPlace(Prediction prediction) async {
+    if (prediction.lat != null && prediction.lng != null) {
+      final lat = prediction.lat;
+      final lng = prediction.lng;
+      final address = prediction.description;
+
+      setState(() {
+        _latitude = double.parse(lat!);
+        _longitude = double.parse(lng!);
+        _placeController.text = address ?? '';
+
+        // Add marker
+        _markers = {
+          Marker(
+            markerId: MarkerId('event-location'),
+            position: LatLng(double.parse(lat), double.parse(lng)),
+            infoWindow: InfoWindow(title: address ?? 'Selected Location'),
+          )
+        };
+
+        // Move camera
+        _mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(LatLng(double.parse(lat), double.parse(lng)), 15),
+        );
+      });
+    }
   }
 
   Future<void> _createEvent() async {
@@ -53,8 +92,6 @@ class _CreateEventPageState extends State<CreateEventPage> {
     }
 
     int? maxParticipants = int.tryParse(_maxParticipantsController.text);
-    double? latitude = double.tryParse(_latitudeController.text);
-    double? longitude = double.tryParse(_longitudeController.text);
 
     if (maxParticipants == null || maxParticipants < 0) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -63,9 +100,9 @@ class _CreateEventPageState extends State<CreateEventPage> {
       return;
     }
 
-    if (latitude == null || longitude == null) {
+    if (_latitude == null || _longitude == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Latitude et longitude doivent être des nombres valides")),
+        SnackBar(content: Text("Veuillez sélectionner un lieu sur la carte")),
       );
       return;
     }
@@ -80,8 +117,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
         'createdAt': DateTime.now().toIso8601String(),
         'maxParticipants': maxParticipants,
         'sportId': _sportId,
-        'longitude': longitude,
-        'latitude': latitude,
+        'longitude': _longitude,
+        'latitude': _latitude,
       }).select('id').single();
 
       final eventId = eventResponse['id'];
@@ -114,6 +151,86 @@ class _CreateEventPageState extends State<CreateEventPage> {
     }
   }
 
+  void _onMapTapped(LatLng position) async {
+    setState(() {
+      _latitude = position.latitude;
+      _longitude = position.longitude;
+
+      // Update marker
+      _markers = {
+        Marker(
+          markerId: MarkerId('event-location'),
+          position: position,
+          infoWindow: InfoWindow(title: 'Lieu de l\'événement'),
+        )
+      };
+    });
+
+    setState(() {
+      _placeController.text = "Emplacement sélectionné sur la carte";
+    });
+  }
+
+  Widget _buildPlacesAutoComplete() {
+    return GooglePlaceAutoCompleteTextField(
+      focusNode: _focusNode,
+      textEditingController: _placeController,
+      googleAPIKey: "AIzaSyB5TV0G7ArU7al4PIfw7tcPooE2rZHxYRU",
+      inputDecoration: InputDecoration(
+        labelText: "Rechercher un lieu",
+        border: OutlineInputBorder(),
+        suffixIcon: Icon(Icons.search),
+      ),
+      debounceTime: 400,
+      countries: ["fr"],
+      isLatLngRequired: true,
+      getPlaceDetailWithLatLng: (Prediction prediction) {
+        if (prediction.lat != null && prediction.lng != null) {
+          setState(() {
+            _latitude = double.parse(prediction.lat!);
+            _longitude = double.parse(prediction.lng!);
+
+            // Add marker
+            if (_latitude != null && _longitude != null) {
+              _markers = {
+                Marker(
+                  markerId: MarkerId('event-location'),
+                  position: LatLng(_latitude!, _longitude!),
+                  infoWindow: InfoWindow(title: prediction.description ?? 'Selected Location'),
+                )
+              };
+
+              // Move camera
+              _mapController?.animateCamera(
+                CameraUpdate.newLatLngZoom(LatLng(_latitude!, _longitude!), 15),
+              );
+            }
+          });
+        }
+      },
+      itemClick: (Prediction prediction) {
+        _placeController.text = prediction.description ?? "";
+        _placeController.selection = TextSelection.fromPosition(
+            TextPosition(offset: prediction.description?.length ?? 0));
+      },
+      seperatedBuilder: Divider(),
+      containerHorizontalPadding: 10,
+      itemBuilder: (context, index, Prediction prediction) {
+        return Container(
+          padding: EdgeInsets.all(10),
+          child: Row(
+            children: [
+              Icon(Icons.location_on),
+              SizedBox(width: 7),
+              Expanded(child: Text("${prediction.description ?? ""}"))
+            ],
+          ),
+        );
+      },
+      isCrossBtnShown: true,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,16 +250,56 @@ class _CreateEventPageState extends State<CreateEventPage> {
                       decoration: InputDecoration(labelText: "Titre"),
                       validator: (value) => value!.isEmpty ? "Titre requis" : null,
                     ),
+                    SizedBox(height: 16),
                     TextFormField(
                       controller: _descriptionController,
                       decoration: InputDecoration(labelText: "Description"),
                       validator: (value) => value!.isEmpty ? "Description requise" : null,
                     ),
-                    TextFormField(
-                      controller: _placeController,
-                      decoration: InputDecoration(labelText: "Lieu"),
-                      validator: (value) => value!.isEmpty ? "Lieu requis" : null,
+                    SizedBox(height: 16),
+
+                    // Place search with autocomplete
+                    _buildPlacesAutoComplete(),
+
+                    SizedBox(height: 16),
+
+                    // Map view
+                    Container(
+                      height: 250,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: GoogleMap(
+                          initialCameraPosition: CameraPosition(
+                            target: _latitude != null && _longitude != null
+                                ? LatLng(_latitude!, _longitude!)
+                                : _defaultLocation,
+                            zoom: 14,
+                          ),
+                          onMapCreated: (GoogleMapController controller) {
+                            _mapController = controller;
+                          },
+                          markers: _markers,
+                          myLocationEnabled: true,
+                          myLocationButtonEnabled: true,
+                          onTap: _onMapTapped,
+                        ),
+                      ),
                     ),
+
+                    if (_latitude != null && _longitude != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          "Coordonnées: $_latitude, $_longitude",
+                          style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                        ),
+                      ),
+
+                    SizedBox(height: 16),
                     TextFormField(
                       controller: _maxParticipantsController,
                       decoration: InputDecoration(labelText: "Nombre max de participants"),
@@ -154,26 +311,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                         return null;
                       },
                     ),
-                    TextFormField(
-                      controller: _latitudeController,
-                      decoration: InputDecoration(labelText: "Latitude"),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value!.isEmpty) return "Ce champ est requis";
-                        if (double.tryParse(value) == null) return "Entrez une latitude valide";
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      controller: _longitudeController,
-                      decoration: InputDecoration(labelText: "Longitude"),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value!.isEmpty) return "Ce champ est requis";
-                        if (double.tryParse(value) == null) return "Entrez une longitude valide";
-                        return null;
-                      },
-                    ),
+
                     SizedBox(height: 16),
                     Text("Date de l'événement"),
                     ElevatedButton(
@@ -185,20 +323,36 @@ class _CreateEventPageState extends State<CreateEventPage> {
                           lastDate: DateTime(2100),
                         );
                         if (pickedDate != null) {
-                          setState(() {
-                            _selectedDate = pickedDate;
-                          });
+                          // Now pick time
+                          TimeOfDay? pickedTime = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.now(),
+                          );
+
+                          if (pickedTime != null) {
+                            setState(() {
+                              _selectedDate = DateTime(
+                                pickedDate.year,
+                                pickedDate.month,
+                                pickedDate.day,
+                                pickedTime.hour,
+                                pickedTime.minute,
+                              );
+                            });
+                          }
                         }
                       },
                       child: Text(_selectedDate == null
-                          ? "Sélectionner une date"
-                          : "Date : ${_selectedDate!.toLocal()}"),
+                          ? "Sélectionner une date et heure"
+                          : "Date : ${_formatDateTime(_selectedDate!)}"),
                     ),
+
                     SizedBox(height: 16),
                     Text("Sport"),
                     DropdownButton<int>(
                       value: _sportId,
                       hint: Text("Sélectionnez un sport"),
+                      isExpanded: true,
                       items: _sports.map((sport) {
                         return DropdownMenuItem<int>(
                           value: sport['id'],
@@ -217,14 +371,42 @@ class _CreateEventPageState extends State<CreateEventPage> {
             ),
           ),
           Container(
+            width: double.infinity,
             padding: EdgeInsets.all(16.0),
             child: ElevatedButton(
               onPressed: _createEvent,
-              child: Text("Créer l'événement"),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                child: Text(
+                  "Créer l'événement",
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    final day = dateTime.day.toString().padLeft(2, '0');
+    final month = dateTime.month.toString().padLeft(2, '0');
+    final year = dateTime.year;
+    final hour = dateTime.hour.toString().padLeft(2, '0');
+    final minute = dateTime.minute.toString().padLeft(2, '0');
+
+    return "$day/$month/$year à $hour:$minute";
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _placeController.dispose();
+    _maxParticipantsController.dispose();
+    _mapController?.dispose();
+    super.dispose();
   }
 }

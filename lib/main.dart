@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sporty/ui/chat/chat.dart';
-import 'package:sporty/ui/create/create.dart';
+import 'package:sporty/ui/create/createEventPage.dart';
 import 'package:sporty/ui/event_details/event_details.dart';
 import 'package:sporty/ui/event_feed/event_feed.dart';
 import 'package:sporty/ui/search/search.dart';
@@ -21,7 +21,7 @@ Future<void> main() async {
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => MyAppState()),
-          // Provider(create: (context) => EventsService()),
+          Provider(create: (context) => EventsService()),
         ],
         child: MyApp(),
       )
@@ -82,7 +82,7 @@ class MainScreen extends StatelessWidget {
     // Lazy-initialize pages when building
     final pages = [
       const EventFeed(),
-      const CreateApp(),
+      const CreateEventPage(),
       const Search(),
       const ChatApp(),
     ];
