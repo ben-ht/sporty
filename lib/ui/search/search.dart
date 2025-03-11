@@ -24,7 +24,6 @@ class _SearchState extends State<Search> {
 
   /// Récupération des événements disponibles (où l'utilisateur N'EST PAS participant)
   Future<void> _fetchEvents() async {
-<<<<<<< HEAD
     final user = _client.auth.currentUser;
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -32,12 +31,6 @@ class _SearchState extends State<Search> {
       );
       return;
     }
-=======
-    final response = await _client.from('events').select('''
-      id, title, description, creatorId, date, longitude, latitude, maxParticipants, createdAt,
-      sports (id, name)
-    ''');
->>>>>>> 9a12ba3f92a5208a5d73dbd5750f23807ef2bf41
 
     final now = DateTime.now().toIso8601String();
 
