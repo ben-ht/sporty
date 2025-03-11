@@ -60,4 +60,9 @@ class Event {
       place: map['place'],
     );
   }
+
+  @override
+  String toString() {
+    return 'Event{id: $id, title: $title, description: $description, creatorId: $creatorId, date: $date, longitude: $longitude, latitude: $latitude, sport: $sport, maxParticipants: $maxParticipants, createdAt: $createdAt, place: $place}';
+  }
 }

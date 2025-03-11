@@ -90,6 +90,8 @@ class _EventFeedPageState extends State<EventFeed> {
       final eventService = Provider.of<EventsService>(context, listen: false);
       final events = await eventService.getEvents();
 
+      print('Events: $events.toString()');
+
       setState(() {
         _events = events;
         _isLoadingEvents = false;

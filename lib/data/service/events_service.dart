@@ -10,13 +10,16 @@ class EventsService {
       final data = await _client
           .from('events')
           .select('''
-            *,
-            sport:sports(*)
-          ''');
+          id, title, description, creatorId, date, longitude, latitude, maxParticipants, createdAt, place,
+          sports (id, name)
+        ''');
+      print('data: $data');
 
-      return (data as List)
-          .map((e) => Event.fromMap(e as Map<String, dynamic>))
-          .toList();
+      List<Event> events = data.map<Event>((map) => Event.fromMap(map)).toList();
+      print('events    : $events');
+      // print((data as List).map((e) => Event.fromMap(e as Map<String, dynamic>)).toList());
+
+      return events;
 
     } catch (error) {
       print('Error fetching events: $error');

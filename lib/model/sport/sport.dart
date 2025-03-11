@@ -18,6 +18,11 @@ class Sport {
     );
   }
 
+  @override
+  String toString() {
+    return 'Sport{id: $id, name: $name}';
+  }
+
   // factory Sport.fromJson(Map<String, dynamic> json) {
   //   return Sport(
   //     id: json['id'],
