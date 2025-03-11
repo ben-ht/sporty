@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:async';
 
 class ChatDetailPage extends StatefulWidget {
   final int chatId;
@@ -14,6 +15,31 @@ class ChatDetailPage extends StatefulWidget {
 class _ChatDetailPageState extends State<ChatDetailPage> {
   final supabase = Supabase.instance.client;
   final TextEditingController _messageController = TextEditingController();
+  Timer? _timer;
+  List<Map<String, dynamic>> _messages = [];
+  final user = Supabase.instance.client.auth.currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _startAutoRefresh();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoRefresh() {
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) async {
+      final messages = await _getChatMessages();
+      setState(() {
+        _messages = messages;
+      });
+    });
+  }
 
   Future<List<Map<String, dynamic>>> _getChatMessages() async {
     final response = await Supabase.instance.client
@@ -39,7 +65,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     });
 
     _messageController.clear();
-    setState(() {}); // Recharger les messages après envoi
   }
 
   @override
@@ -49,34 +74,48 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       body: Column(
         children: [
           Expanded(
-            child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: _getChatMessages(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Erreur: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('Aucun message pour ce chat.'));
-                } else {
-                  final messages = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      final message = messages[index];
-                      final username = message['profiles']?['username'] ?? 'Utilisateur inconnu';
+            child: _messages.isEmpty
+                ? Center(child: CircularProgressIndicator())
+                : ListView.builder(
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final message = _messages[index];
+                final username = message['profiles']?['username'] ?? 'Utilisateur inconnu';
+                final isAuthor = message['user_id'] == user?.id;
 
-                      return ListTile(
-                        title: Text(message['message']),
-                        subtitle: Text(username, style: TextStyle(fontWeight: FontWeight.bold)),
-                      );
-                    },
-                  );
-                }
+                return Align(
+                  alignment: isAuthor ? Alignment.centerRight : Alignment.centerLeft,
+                  child: Container(
+                    padding: EdgeInsets.all(8.0),
+                    margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                    decoration: BoxDecoration(
+                      color: isAuthor ? Colors.blue[50] : Colors.white,
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          message['message'],
+                          style: TextStyle(
+                            color: isAuthor ? Colors.blue : Colors.black,
+                            fontWeight: isAuthor ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        ),
+                        Text(
+                          username,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: isAuthor ? Colors.blue : Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               },
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
