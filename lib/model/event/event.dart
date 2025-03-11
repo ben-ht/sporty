@@ -45,6 +45,7 @@ class Event {
 
   factory Event.fromMap(Map<String, dynamic> map) {
     return Event(
+<<<<<<< HEAD
       id: map['id'],
       title: map['title'],
       description: map['description'],
@@ -58,6 +59,18 @@ class Event {
       maxParticipants: map['maxParticipants'],
       createdAt: DateTime.parse(map['createdAt']),
       place: map['place'],
+=======
+      id: json['id'],
+      title: json['title'],
+      description: json['description'],
+      creatorId: json['creatorId'],
+      date: DateTime.parse(json['date']),
+      longitude: double.parse(json['longitude'].toString()),
+      latitude: double.parse(json['latitude'].toString()),
+      sport: Sport.fromJson(json['sport']),
+      maxParticipants: json['maxParticipants'],
+      createdAt: DateTime.parse(json['createdAt']),
+>>>>>>> 9a12ba3f92a5208a5d73dbd5750f23807ef2bf41
     );
   }
 }

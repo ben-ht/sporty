@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sporty/ui/chat/chat.dart';
 import 'package:sporty/ui/create/create.dart';
+import 'package:sporty/ui/event_details/event_details.dart';
 import 'package:sporty/ui/event_feed/event_feed.dart';
 import 'package:sporty/ui/search/search.dart';
 import 'package:sporty/ui/signup/widgets/signup.dart';
@@ -9,6 +10,7 @@ import 'package:sporty/ui/signup/widgets/sports_selection.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'data/service/events_service.dart';
+import 'model/event/event.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,6 +47,13 @@ class MyApp extends StatelessWidget {
           '/signup': (context) => SignupScreen(),
           '/sportsPreferences': (context) => SportsSelection(),
           '/search': (context) => Search(),
+        },
+        onGenerateRoute: (settings) {
+          if (settings.name == '/event_details') {
+            final event = settings.arguments as Event;
+            return MaterialPageRoute(builder: (context) => EventDetail(event: event));
+          }
+          return null;
         },
       ),
     );
