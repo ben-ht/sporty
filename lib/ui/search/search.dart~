@@ -1,5 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:sporty/model/event/event.dart';
 import 'package:sporty/ui/search/event_card.dart';
 
@@ -11,46 +13,49 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
-  final SupabaseClient _client = Supabase.instance.client;
 
+  // final TextEditingController _searchController = TextEditingController();
   List<Event> _allEvents = [];
   List<Event> _filteredEvents = [];
 
   @override
   void initState() {
-    super.initState();
-    _fetchEvents();
+    super.initState() ;
+    _loadActivities() ;
   }
 
-  Future<void> _fetchEvents() async {
-    final response = await _client.from('events').select('''
-      id, title, description, creatorId, date, longitude, latitude, maxParticipants, createdAt,
-      sport (id, name)
-    ''');
-
-    List<Event> events = response.map<Event>((json) => Event.fromJson(json)).toList();
-
+  Future<void> _loadActivities() async {
+    String jsonString = await rootBundle.loadString('public/data/events.json');
+    List<dynamic> jsonList = json.decode(jsonString);
     setState(() {
-      _allEvents = events;
-      _filteredEvents = events;
+      _allEvents = Event.fromJsonList(jsonList);
+      _filteredEvents = Event.fromJsonList(jsonList) ;
     });
   }
+
 
   void _handleSearch(String query) {
     setState(() {
       _filteredEvents = _allEvents.where((event) =>
-      event.title.toLowerCase().contains(query.toLowerCase()) ||
-          event.sport.name.toLowerCase().contains(query.toLowerCase())
+        event.title!.toLowerCase().contains(query.toLowerCase()) ||
+        event.sports!.any((sport) => 
+          // sport.name.toLowerCase().contains(query.toLowerCase()))
+          sport.toLowerCase().contains(query.toLowerCase()))
       ).toList();
     });
   }
+
+
+  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
+
           Image.asset('public/img/sportyLogo.png', height: 200),
+
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Container(
@@ -62,7 +67,8 @@ class _SearchState extends State<Search> {
                 children: [
                   Expanded(
                     child: TextField(
-                      onChanged: _handleSearch,
+                      // controller: _searchController, // utile ?
+                      onChanged: (value) => _handleSearch(value),
                       decoration: InputDecoration(
                         hintText: 'Rechercher...',
                         border: InputBorder.none,
@@ -74,6 +80,8 @@ class _SearchState extends State<Search> {
               ),
             ),
           ),
+
+
           Expanded(
             child: DraggableScrollableSheet(
               initialChildSize: 1.0,
@@ -90,7 +98,12 @@ class _SearchState extends State<Search> {
                     controller: scrollController,
                     itemCount: _filteredEvents.length,
                     itemBuilder: (context, index) {
-                      return EventCard(_filteredEvents[index]);
+                      // return ListTile(
+                      //   title: Text(_filteredEvents[index].title ?? 'toto'),
+                      //   // subtitle: Text(_filteredEvents[index].sports!.map((s) => s.name).join(', ')),
+                      //   subtitle: Text(_filteredEvents[index].sports!.join(', ')),
+                      // );
+                      return EventCard(_filteredEvents[index]); 
                     },
                   ),
                 );

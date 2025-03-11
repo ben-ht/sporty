@@ -13,21 +13,21 @@ class EventCard extends StatelessWidget {
         padding: EdgeInsets.all(6),
         child: ExpansionTile(
           leading: Icon(Icons.event),
-          title: Text(event.title ?? 'Événement sans titre'),
-          subtitle: Text(event.date ?? 'Date non spécifiée'),
+          title: Text(event.title),
+          subtitle: Text(event.date.toString()),
           children: [
             Padding(
               padding: EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Description: ${event.description ?? 'Aucune description'}'),
+                  Text('Description: ${event.description}'),
                   SizedBox(height: 8),
-                  Text('Lieu: ${event.location ?? 'Non spécifié'}'),
+                  Text('Lieu:'),
                   SizedBox(height: 8),
-                  Text('Sports: ${event.sports?.join(', ') ?? 'Aucun sport spécifié'}'),
+                  Text('Sports: ${event.sport}'),
                   SizedBox(height: 8),
-                  Text('Participants: ${event.maxParticipants ?? 'Non spécifié'}'),
+                  Text('Participants: ${event.maxParticipants}'),
                 ],
               ),
             ),
