@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:sporty/utils/constants/size.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../model/user/user.dart';
@@ -16,15 +14,8 @@ class AuthService {
       password: password,
     );
 
-    // TODO util.showToast
     if (response.user == null){
-      Fluttertoast.showToast(msg: "Registration failed. Please try again.",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.SNACKBAR,
-          backgroundColor: Colors.black26,
-          textColor: Colors.white70,
-          fontSize: Sizes.fontSizeLg
-      );
+      SnackBar(content: Text("Registration failed. Please try again."));
       return;
     }
     final userId = response.user!.id;

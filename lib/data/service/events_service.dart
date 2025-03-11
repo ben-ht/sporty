@@ -10,7 +10,7 @@ class EventsService {
       final data = await _client
           .from('events')
           .select('''
-          id, title, description, creatorId, date, longitude, latitude, maxParticipants, createdAt, place,
+          id, title, description, creatorId, date, longitude, latitude, maxParticipants, createdAt, place, city,
           sports (id, name)
         ''');
       print('data: $data');
