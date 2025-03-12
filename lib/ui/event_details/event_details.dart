@@ -43,7 +43,8 @@ class _EventDetailPageState extends State<EventDetail> {
 
   @override
   Widget build(BuildContext context) {
-    // Get the event location as a LatLng for the map
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final LatLng eventLocation = LatLng(
       widget.event.latitude,
       widget.event.longitude,
@@ -51,7 +52,7 @@ class _EventDetailPageState extends State<EventDetail> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Event Details'),
+        backgroundColor: colorScheme.primary,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -62,116 +63,95 @@ class _EventDetailPageState extends State<EventDetail> {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 widget.event.title,
-                style: Theme.of(context).textTheme.headlineMedium,
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.primary,
+                ),
               ),
             ),
 
             // Google Map
-            SizedBox(
-              height: 250,
-              width: double.infinity,
-              child: GoogleMap(
-                onMapCreated: _onMapCreated,
-                initialCameraPosition: CameraPosition(
-                  target: eventLocation,
-                  zoom: 15.0,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: SizedBox(
+                height: 250,
+                width: double.infinity,
+                child: GoogleMap(
+                  onMapCreated: _onMapCreated,
+                  initialCameraPosition: CameraPosition(
+                    target: eventLocation,
+                    zoom: 15.0,
+                  ),
+                  markers: markers,
+                  mapType: MapType.normal,
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: true,
                 ),
-                markers: markers,
-                mapType: MapType.normal,
-                myLocationEnabled: true,
-                myLocationButtonEnabled: true,
               ),
             ),
 
-            // Event Details
+            const SizedBox(height: 16),
+
+            // Event Details Section
             Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.place, color: Theme.of(context).primaryColor),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Sport: ${widget.event.place}',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 12),
-                  // Sport Type
-                  Row(
-                    children: [
-                      Icon(Icons.sports, color: Theme.of(context).primaryColor),
-                      const SizedBox(width: 8),
+                      _buildInfoRow(context, Icons.place, 'Lieu: ${widget.event.place}'),
+                      _buildInfoRow(context, Icons.sports, 'Sport: ${widget.event.sport?.name ?? 'Unknown'}'),
+                      _buildInfoRow(context, Icons.calendar_today, 'Date: ${_formatDate(widget.event.date)}'),
+                      _buildInfoRow(context, Icons.people, 'Participants: ${widget.event.maxParticipants}'),
+                      SizedBox(height: 32),
                       Text(
-                        'Sport: ${widget.event.sport?.name}',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        'Description',
+                        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Date and Time
-                  Row(
-                    children: [
-                      Icon(Icons.calendar_today, color: Theme.of(context).primaryColor),
-                      const SizedBox(width: 8),
+                      SizedBox(height: 8),
                       Text(
-                        'Date: ${_formatDate(widget.event.date)}',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
+                        widget.event.description,
+                        style: theme.textTheme.bodyLarge,
+                      )
                     ],
                   ),
-                  const SizedBox(height: 12),
-
-                  // Participants
-                  Row(
-                    children: [
-                      Icon(Icons.people, color: Theme.of(context).primaryColor),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Max Participants: ${widget.event.maxParticipants}',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Description
-                  Text(
-                    'Description',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    widget.event.description,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ],
+                ),
               ),
             ),
           ],
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        color: Colors.transparent,
+        elevation: 0,
+        child: SizedBox(
+          width: double.infinity,
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: theme.primaryColor,
+              foregroundColor: Colors.white70,
+              padding: const EdgeInsets.all(14),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
             onPressed: () async {
-              await Provider.of<EventsService>(context, listen: false).joinEvent(Supabase.instance.client.auth.currentUser!, widget.event);
+              await Provider.of<EventsService>(context, listen: false)
+                  .joinEvent(Supabase.instance.client.auth.currentUser!, widget.event);
 
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Vous avez rejoint: ${widget.event.title}')),
+                SnackBar(
+                  content: Text('Vous avez rejoint: ${widget.event.title}'),
+                  backgroundColor: colorScheme.secondary,
+                ),
               );
             },
-            child: const Padding(
-              padding: EdgeInsets.all(12.0),
-              child: Text('Rejoindre'),
+            child: const Text('Rejoindre',
+                style: TextStyle(
+                    fontSize: 16,
+                ),
             ),
           ),
         ),
@@ -179,6 +159,26 @@ class _EventDetailPageState extends State<EventDetail> {
     );
   }
 
+  Widget _buildInfoRow(BuildContext context, IconData icon, String text) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: theme.colorScheme.primary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: theme.textTheme.titleMedium,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
   // Helper method to format date
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year} at ${date.hour}:${date.minute.toString().padLeft(2, '0')}';

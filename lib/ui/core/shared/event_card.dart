@@ -11,7 +11,9 @@ class EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
       child: Card(
+        //color: theme.cardColor,
         child: Container(
           padding: EdgeInsets.all(6),
           child: Padding(
@@ -19,15 +21,12 @@ class EventCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(event.title, style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(event.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                 SizedBox(height: 8),
-                Text('Description: ${event.description}'),
-                SizedBox(height: 8),
-                Text('Lieu: ${event.city}'),
-                SizedBox(height: 8),
-                Text('Sports: ${event.sport?.name}'),
-                SizedBox(height: 8),
-                Text('Participants: ${event.maxParticipants}'),
+                _buildInfoRow(context, Icons.description, event.description),
+                _buildInfoRow(context, Icons.location_on, event.city),
+                _buildInfoRow(context, Icons.sports, event.sport?.name ?? 'Unknown'),
+                _buildInfoRow(context, Icons.people, '${event.maxParticipants} Participants'),
               ],
             ),
           )
@@ -35,4 +34,26 @@ class EventCard extends StatelessWidget {
       ),
     ) ;
   }
+
+  Widget _buildInfoRow(BuildContext context, IconData icon, String text) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: theme.colorScheme.primary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: theme.textTheme.bodyMedium,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }

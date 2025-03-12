@@ -249,8 +249,14 @@ class _CreateEventPageState extends State<CreateEventPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: Text("Créer un événement")),
+      appBar: AppBar(
+        title: Text("Créer un événement"),
+        backgroundColor: theme.primaryColor,
+        foregroundColor: Colors.white,
+      ),
       body: Column(
         children: [
           Expanded(
@@ -266,7 +272,6 @@ class _CreateEventPageState extends State<CreateEventPage> {
                       decoration: InputDecoration(labelText: "Titre"),
                       validator: (value) => value!.isEmpty ? "Titre requis" : null,
                     ),
-                    SizedBox(height: 16),
                     TextFormField(
                       controller: _descriptionController,
                       decoration: InputDecoration(labelText: "Description"),
@@ -329,7 +334,6 @@ class _CreateEventPageState extends State<CreateEventPage> {
                     ),
 
                     SizedBox(height: 16),
-                    Text("Date de l'événement"),
                     ElevatedButton(
                       onPressed: () async {
                         DateTime? pickedDate = await showDatePicker(
@@ -364,7 +368,6 @@ class _CreateEventPageState extends State<CreateEventPage> {
                     ),
 
                     SizedBox(height: 16),
-                    Text("Sport"),
                     DropdownButton<int>(
                       value: _sportId,
                       hint: Text("Sélectionnez un sport"),
