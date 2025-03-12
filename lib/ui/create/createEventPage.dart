@@ -129,17 +129,15 @@ class _CreateEventPageState extends State<CreateEventPage> {
         'userId': user.id,
       });
 
-      final chatResponse = await supabase.from('chat').insert({
+      await supabase.from('chat').insert({
         'event_id': eventId,
       }).select('id').single();
 
-      final chatId = chatResponse['id'];
-
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Événement et chat créés avec succès !")),
+        SnackBar(content: Text("Événement créé avec succès !")),
       );
 
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => ChatApp(),
@@ -194,7 +192,6 @@ class _CreateEventPageState extends State<CreateEventPage> {
       googleAPIKey: "AIzaSyB5TV0G7ArU7al4PIfw7tcPooE2rZHxYRU",
       inputDecoration: InputDecoration(
         labelText: "Rechercher un lieu",
-        border: OutlineInputBorder(),
         suffixIcon: Icon(Icons.search),
       ),
       debounceTime: 400,
@@ -314,10 +311,6 @@ class _CreateEventPageState extends State<CreateEventPage> {
                     if (_latitude != null && _longitude != null)
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          "Coordonnées: $_latitude, $_longitude",
-                          style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                        ),
                       ),
 
                     SizedBox(height: 16),

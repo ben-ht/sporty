@@ -112,6 +112,9 @@ class _EventFeedPageState extends State<EventFeed> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
       body: RefreshIndicator(
         onRefresh: _refreshData,
         child: _isLoadingEvents && _events.isEmpty
